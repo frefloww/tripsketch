@@ -20,7 +20,8 @@ class ImageService(
                 ?: throw UserNotFoundException("사용자가 존재하지 않습니다.")
 
         // 파일 업로드
-        val uploadedImageUrl = oracleObjectStorageService.uploadImageAndGetUrl(file)
+        val bucketName = "tripsketch"
+        val uploadedImageUrl = oracleObjectStorageService.uploadImageAndGetUrl(bucketName, file)
         val ProfileDto = ProfileDto(
                 // 안에서 쓰는 변수는 소문자, 외부에서 가져다쓰는 변수는 대문자
                 nickname = null,
