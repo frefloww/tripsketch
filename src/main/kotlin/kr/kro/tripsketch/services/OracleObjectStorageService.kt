@@ -13,14 +13,13 @@ import java.io.InputStream
 
 @Service
 class OracleObjectStorageService {
-    // GetObjectResponse를 data class로 정의
-    data class GetObjectResponse(val objectUrl: String)
+
+    data class GetObjectResponse(val objectUrl: String?)
 
     fun uploadImageAndGetUrl(bucketName: String, file: MultipartFile): String {
         // OCI SDK 설정
         val oracleTenancy = "ORACLE_TENANCY"
-        val oracleFingerprint = "ORACLE_FINGERPRINT"
-        val oracleUser = "ORACLE_USER"
+        val oracleBaseUrl = "ORACLE_BASEURL"
         val configFile = ConfigFileReader.parse("~/.oci/config")
         val authDetailsProvider = ConfigFileAuthenticationDetailsProvider(configFile)
 
@@ -40,18 +39,19 @@ class OracleObjectStorageService {
                 .build()
             objectStorageClient.putObject(putObjectRequest)
 
-            // 객체(파일)의 URL 생성
-            val namespaceName = System.getenv("ORACLE_NAMESPACE")
-            val getObjectRequest = GetObjectRequest.builder()
-                .namespaceName(namespaceName)
-                .bucketName(bucketName)
-                .objectName(objectName)
-                .build()
+            // 파일 URL 생성
+//            val namespaceName = System.getenv("ORACLE_NAMESPACE")
+//            val getObjectRequest = GetObjectRequest.builder()
+//                .namespaceName(namespaceName)
+//                .bucketName(bucketName)
+//                .objectName(objectName)
+//                .build()
 
-            val getObjectResponse = objectStorageClient.getObject(getObjectRequest)
+            val bucketUrl = oracleBaseUrl // 버킷 URL
+            val objectUrl = "$bucketUrl/$objectName" // URL 조합
 
-            // 파일 URL 얻기
-            val objectUrl: String = getObjectResponse.objectUrl
+            System.out.println(objectUrl)
+
             return objectUrl
 
         } finally {
